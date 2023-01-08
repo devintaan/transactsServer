@@ -1,8 +1,37 @@
 const express = require("express");
 const app = express();
 const port = process.env.PORT || 3001;
+var uuidv4 = require('uuid').v4;
 
-app.get("/", (req, res) => res.type('html').send(html));
+function processInvoice (wallet, token, amount, description){
+   
+    var id = uuidv4()
+    var response = {
+        "invoice-id": id,
+        "wallet": wallet,
+        "token": token,
+        "amount": amount,
+        "desc": description,
+        "redirect": `?invoice=${id}`
+    }
+
+    return response;
+}
+console.log("server connected!")
+  
+app.get("/invoice", (req, res) => {
+    console.log("generating invoice")
+    let wallet = req.query.wallet;
+    let token = req.query.token;
+    let amount = req.query.amount;
+    let desc = req.query.description;
+
+    res.json(processInvoice(wallet, token, amount, desc))
+});
+
+process.on('uncaughtException', function (err) {
+    console.log(err);
+});   
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
